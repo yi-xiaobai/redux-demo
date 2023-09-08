@@ -1,35 +1,36 @@
 import React, { Component } from 'react'
-import { Input, Button, List } from 'antd'
 import store from './store'
-import { changeInputAction, addItemAction, removeItemAction } from './store/actionCreators'
+import ToDoListUI from './ToDoListUI'
+import { changeInputAction, addItemAction, removeItemAction, getListAction, getToDoList } from './store/actionCreators'
 
+
+// 业务JS处理
 class ToDoList extends Component {
     constructor(props) {
         super(props);
-
         // 获取store仓库值
         this.state = store.getState()
-
         // 监听store值  如果state变化了 自动执行processState函数
         store.subscribe(this.processState)
     }
     state = {}
     render() {
         return (
-            <div style={{ margin: '10px auto', width: '500px' }}>
-                <div>
-                    <Input placeholder={this.state.value} style={{ width: '250px', height: '30px' }}
-                        onChange={this.handleChangeValue} onKeyUp={this.handleKeyUpValue} value={this.state.value} />
-                    <Button type='primary' onClick={this.handleClickPlus}>增加</Button>
-                </div>
-
-                <div style={{ marginTop: '10px', width: '300px' }}>
-                    <List bordered
-                        dataSource={this.state.list}
-                        renderItem={(item, index) => <List.Item onClick={this.handleClickRemoveItem.bind(this, index)}>{item}</List.Item>}></List>
-                </div>
-            </div>
+            <ToDoListUI
+                value={this.state.value}
+                list={this.state.list}
+                handleChangeValue={this.handleChangeValue}
+                handleKeyUpValue={this.handleKeyUpValue}
+                handleClickPlus={this.handleClickPlus}
+                handleClickRemoveItem={this.handleClickRemoveItem}
+            />
         );
+    }
+
+    // 生命周期函数 在render之后执行
+    componentDidMount() {
+        const action = getToDoList()
+        store.dispatch(action)
     }
 
 
@@ -73,9 +74,7 @@ class ToDoList extends Component {
 
 
     processState = () => {
-        console.log('==>Get 监听state');
         // 获取仓库state值
-        console.log('==>Get state', store.getState());
         this.setState(store.getState())
     }
 }

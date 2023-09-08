@@ -1,11 +1,7 @@
-import { CHANGE_INPUT, ADD_ITEM, REMOVE_ITEM } from './actionTypes'
+import { CHANGE_INPUT, ADD_ITEM, REMOVE_ITEM, GET_LIST } from './actionTypes'
 const defaultState = {
     value: "write something",
-    list: [
-        '早8点开晨会，分配今天的开发工作',
-        '早9点和项目经理作开发需求讨论会',
-        '晚5:30对今日代码进行review'
-    ]
+    list: []
 }
 
 const Reducer = (state = defaultState, action) => {
@@ -28,6 +24,11 @@ const Reducer = (state = defaultState, action) => {
         return {
             ...state,
             ...{ list: lists }
+        }
+    } else if (action.type === GET_LIST) {
+        return {
+            ...state,
+            ...{ list: action.data }
         }
     }
     return state
