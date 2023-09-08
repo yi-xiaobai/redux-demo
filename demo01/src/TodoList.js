@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Input, Button, List } from 'antd'
 import store from './store'
+import { changeInputAction, addItemAction, removeItemAction } from './store/actionCreators'
 
 class ToDoList extends Component {
     constructor(props) {
@@ -18,29 +19,56 @@ class ToDoList extends Component {
             <div style={{ margin: '10px auto', width: '500px' }}>
                 <div>
                     <Input placeholder={this.state.value} style={{ width: '250px', height: '30px' }}
-                        onChange={this.handleChangeValue} />
-                    <Button type='primary'>增加</Button>
+                        onChange={this.handleChangeValue} onKeyUp={this.handleKeyUpValue} value={this.state.value} />
+                    <Button type='primary' onClick={this.handleClickPlus}>增加</Button>
                 </div>
 
                 <div style={{ marginTop: '10px', width: '300px' }}>
                     <List bordered
                         dataSource={this.state.list}
-                        renderItem={item => <List.Item>{item}</List.Item>}></List>
+                        renderItem={(item, index) => <List.Item onClick={this.handleClickRemoveItem.bind(this, index)}>{item}</List.Item>}></List>
                 </div>
             </div>
         );
     }
 
 
+    // input值改变
     handleChangeValue = (e) => {
-        console.log('==>Get value', e.target.value);
         // 定义action
-        let action = {
-            type: 'changeInput',
-            value: e.target.value
-        }
+        let action = changeInputAction(e.target.value)
         // 发出action  store自动调用reducer进行计算
         store.dispatch(action)
+        action = null
+    }
+
+    handleKeyUpValue = (e) => {
+        // 回车键 也实现增加功能
+        if (e.keyCode === 13) {
+            let action = addItemAction()
+            store.dispatch(action)
+            action = null
+        }
+    }
+
+
+    // 点击增加按钮处理
+    handleClickPlus = () => {
+        // 定义action
+        let action = addItemAction()
+        // 触发store进行state更新
+        store.dispatch(action)
+        action = null
+    }
+
+
+    // 删除列表项
+    handleClickRemoveItem = (index) => {
+        console.log('==>Get index', index);
+        let action = removeItemAction(index)
+        // 触发store进行state更新
+        store.dispatch(action)
+        action = null
     }
 
 
